@@ -1,2 +1,2 @@
 # message-forwarding-server
-一个用来转发消息到telelgram bot的服务器
+测试项目，测试actions 打包 exe的流程

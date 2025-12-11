@@ -1,0 +1,53 @@
+name: Build and Release Python EXE
+
+on:
+  push:
+    tags: ['v*']  # 当推送v开头的标签时触发
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install UV
+      run: pip install uv
+    
+    - name: Install dependencies
+      run: |
+        uv pip install -e .
+        uv pip install pyinstaller --dev
+    
+    - name: Build executable
+      run: |
+        pyinstaller --onefile --name=myapp src/your_package/main.py
+    
+    - name: Get version from tag
+      id: get_version
+      run: |
+        echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Rename executable with version
+      run: |
+        mv dist/myapp.exe dist/myapp-${{ steps.get_version.outputs.version }}.exe
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release v${{ steps.get_version.outputs.version }}
+        tag_name: v${{ steps.get_version.outputs.version }}
+        body: |
+          Automated release of myapp v${{ steps.get_version.outputs.version }}
+          
+          Changes:
+          - See commit history for details
+        files: |
+          dist/myapp-${{ steps.get_version.outputs.version }}.exe
+        draft: false
+        prerelease: false
