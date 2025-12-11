@@ -4,6 +4,10 @@ on:
   push:
     tags: ['v*']  # 当推送v开头的标签时触发
 
+env:
+  APP_NAME: "pythonexe"  # 应用名称变量
+  ENTRY_POINT: "src/message_forwarding_server/main.py"  # 入口文件变量
+
 jobs:
   build:
     runs-on: windows-latest
@@ -15,6 +19,12 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
+    
+    - name: Get version from tag
+      id: get_version
+      run: |
+        echo "version=${GITHUB_REF#refs/tags/v}" >> $env:GITHUB_OUTPUT
+      shell: bash
     
     - name: Install UV
       run: pip install uv
@@ -28,16 +38,11 @@ jobs:
     - name: Build executable
       run: |
         .venv\Scripts\activate
-        pyinstaller --onefile --name=myapp src/message_forwarding_server/main.py
-    
-    - name: Get version from tag
-      id: get_version
-      run: |
-        echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        pyinstaller --onefile --name=${{ env.APP_NAME }} ${{ env.ENTRY_POINT }}
     
     - name: Rename executable with version
       run: |
-        mv dist/myapp.exe dist/myapp-${{ steps.get_version.outputs.version }}.exe
+        mv dist/${{ env.APP_NAME }}.exe dist/${{ env.APP_NAME }}-${{ steps.get_version.outputs.version }}.exe
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -45,11 +50,11 @@ jobs:
         name: Release v${{ steps.get_version.outputs.version }}
         tag_name: v${{ steps.get_version.outputs.version }}
         body: |
-          Automated release of myapp v${{ steps.get_version.outputs.version }}
+          Automated release of ${{ env.APP_NAME }} v${{ steps.get_version.outputs.version }}
           
           Changes:
           - See commit history for details
         files: |
-          dist/myapp-${{ steps.get_version.outputs.version }}.exe
+          dist/${{ env.APP_NAME }}-${{ steps.get_version.outputs.version }}.exe
         draft: false
         prerelease: false
