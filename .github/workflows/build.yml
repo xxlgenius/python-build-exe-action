@@ -27,6 +27,7 @@ jobs:
     
     - name: Build executable
       run: |
+        .venv\Scripts\activate
         pyinstaller --onefile --name=myapp src/message_forwarding_server/main.py
     
     - name: Get version from tag
