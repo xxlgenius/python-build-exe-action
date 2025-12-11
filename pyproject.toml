@@ -1,0 +1,19 @@
+[project]
+name = "message-forwarding-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "xxlgenius", email = "hszhangown@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.3.1",
+]
+
+[project.scripts]
+message-forwarding-server = "message_forwarding_server:main"
+
+[build-system]
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"
