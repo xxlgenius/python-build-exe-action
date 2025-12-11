@@ -7,6 +7,7 @@ on:
 env:
   APP_NAME: "pythonexe"
   ENTRY_POINT: "src/message_forwarding_server/main.py"
+  ICON_POINT: "assert/icons/app.ico"
 
 jobs:
   build:
@@ -40,6 +41,7 @@ jobs:
         uv venv
         if (Test-Path uv.lock) {
           uv sync --locked
+          uv pip install pyinstaller
         } else {
           uv pip install -e .
           uv pip install pyinstaller}
@@ -48,7 +50,7 @@ jobs:
     - name: Build executable
       run: |
         .venv\Scripts\activate
-        pyinstaller --onefile --name=${{ env.APP_NAME }} ${{ env.ENTRY_POINT }}
+        pyinstaller --onefile --icon=${{ env.ICON_POINT }} --name=${{ env.APP_NAME }} ${{ env.ENTRY_POINT }}
     
     - name: Rename executable with version
       run: |
