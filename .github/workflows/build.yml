@@ -27,7 +27,7 @@ jobs:
     
     - name: Build executable
       run: |
-        pyinstaller --onefile --name=myapp src/your_package/main.py
+        pyinstaller --onefile --name=myapp src/message_forwarding_server/main.py
     
     - name: Get version from tag
       id: get_version
